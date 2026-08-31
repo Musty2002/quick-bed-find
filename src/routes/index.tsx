@@ -1,16 +1,23 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { addRequest, useStore } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
+import { createBedRequest, listHospitals, listMyRequests } from "@/lib/beds.functions";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData({
+      queryKey: ["hospitals"],
+      queryFn: () => listHospitals(),
+    }),
   head: () => ({
     meta: [
       { title: "Find an ICU Bed — CritiCare Beds" },
@@ -23,7 +30,50 @@ export const Route = createFileRoute("/")({
 });
 
 function PatientDashboard() {
-  const { hospitals, requests } = useStore();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const runCreateRequest = useServerFn(createBedRequest);
+  const fetchMyRequests = useServerFn(listMyRequests);
+
+  const hospitalsQuery = useSuspenseQuery({
+    queryKey: ["hospitals"],
+    queryFn: () => listHospitals(),
+  });
+  const hospitals = hospitalsQuery.data;
+
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const myRequestsQuery = useQuery({
+    queryKey: ["my-requests"],
+    queryFn: () => fetchMyRequests(),
+    enabled: signedIn,
+    retry: false,
+  });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("home-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "hospitals" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["hospitals"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "bed_requests" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["my-requests"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const [query, setQuery] = useState("");
   const [patient, setPatient] = useState("");
   const [condition, setCondition] = useState("");
@@ -32,20 +82,32 @@ function PatientDashboard() {
     (h.name + h.city).toLowerCase().includes(query.toLowerCase()),
   );
 
-  function request(hospitalId: string) {
+  async function request(hospitalId: string) {
     if (!patient.trim() || !condition.trim()) {
       toast.error("Enter patient name and condition first");
       return;
     }
-    addRequest({ patient, condition, hospitalId, severity: "Critical" });
-    toast.success("Request sent to the hospital");
-    setPatient("");
-    setCondition("");
+    if (!signedIn) {
+      navigate({ to: "/auth", search: { redirect: "/" } });
+      return;
+    }
+    try {
+      await runCreateRequest({
+        data: { hospitalId, patientName: patient, condition, severity: "Critical" },
+      });
+      toast.success("Request sent to the hospital");
+      setPatient("");
+      setCondition("");
+      queryClient.invalidateQueries({ queryKey: ["my-requests"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not send request");
+    }
   }
+
+  const myRequests = (myRequestsQuery.data ?? []) as any[];
 
   return (
     <div className="min-h-screen bg-background">
-      <Toaster />
       <AppHeader />
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
         <div>
@@ -79,14 +141,14 @@ function PatientDashboard() {
                 <div>
                   <p className="font-medium text-foreground">{h.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {h.city} · {h.distanceKm} km · {h.ventilators} ventilators free
+                    {h.city} · {h.distance_km} km · {h.ventilators} ventilators free
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge variant={h.icuFree > 0 ? "default" : "secondary"}>
-                    {h.icuFree}/{h.icuTotal} ICU free
+                  <Badge variant={h.icu_free > 0 ? "default" : "secondary"}>
+                    {h.icu_free}/{h.icu_total} ICU free
                   </Badge>
-                  <Button size="sm" disabled={h.icuFree === 0} onClick={() => request(h.id)}>
+                  <Button size="sm" disabled={h.icu_free === 0} onClick={() => request(h.id)}>
                     Request bed
                   </Button>
                 </div>
@@ -100,10 +162,16 @@ function PatientDashboard() {
             <CardTitle className="text-base">Your requests</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {requests.map((r) => (
+            {!signedIn && (
+              <p className="text-sm text-muted-foreground">Sign in to see your booking requests.</p>
+            )}
+            {signedIn && myRequests.length === 0 && (
+              <p className="text-sm text-muted-foreground">No requests yet.</p>
+            )}
+            {myRequests.map((r) => (
               <div key={r.id} className="flex items-center justify-between border-b border-border pb-2 text-sm last:border-0 last:pb-0">
                 <span className="text-foreground">
-                  {r.patient} — {hospitals.find((h) => h.id === r.hospitalId)?.name}
+                  {r.patient_name} — {r.hospitals?.name}
                 </span>
                 <Badge variant={r.status === "Approved" ? "default" : r.status === "Declined" ? "destructive" : "secondary"}>
                   {r.status}

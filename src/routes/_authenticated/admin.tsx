@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStore } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
+import { getMyRoles, listAllRequests, listHospitals } from "@/lib/beds.functions";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Network Admin Overview — CritiCare Beds" },
@@ -17,9 +21,43 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminDashboard() {
-  const { hospitals, requests } = useStore();
-  const total = hospitals.reduce((s, h) => s + h.icuTotal, 0);
-  const free = hospitals.reduce((s, h) => s + h.icuFree, 0);
+  const queryClient = useQueryClient();
+  const fetchRoles = useServerFn(getMyRoles);
+  const fetchRequests = useServerFn(listAllRequests);
+  const fetchHospitals = useServerFn(listHospitals);
+
+  const rolesQuery = useQuery({ queryKey: ["my-roles"], queryFn: () => fetchRoles() });
+  const roles = rolesQuery.data ?? [];
+  const isStaff = roles.includes("staff") || roles.includes("admin");
+
+  const requestsQuery = useQuery({
+    queryKey: ["all-requests"],
+    queryFn: () => fetchRequests(),
+    enabled: isStaff,
+    retry: false,
+  });
+  const hospitalsQuery = useQuery({ queryKey: ["hospitals"], queryFn: () => fetchHospitals() });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bed_requests" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["all-requests"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "hospitals" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["hospitals"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  const hospitals = hospitalsQuery.data ?? [];
+  const requests = (requestsQuery.data ?? []) as any[];
+
+  const total = hospitals.reduce((s, h) => s + h.icu_total, 0);
+  const free = hospitals.reduce((s, h) => s + h.icu_free, 0);
   const occupancy = total ? Math.round(((total - free) / total) * 100) : 0;
 
   const stats = [
@@ -57,7 +95,7 @@ function AdminDashboard() {
             {hospitals.map((h) => (
               <div key={h.id} className="flex items-center justify-between border-b border-border pb-2 text-sm last:border-0 last:pb-0">
                 <span className="text-foreground">{h.name} <span className="text-muted-foreground">· {h.city}</span></span>
-                <Badge variant={h.icuFree > 0 ? "default" : "destructive"}>{h.icuFree}/{h.icuTotal} free</Badge>
+                <Badge variant={h.icu_free > 0 ? "default" : "destructive"}>{h.icu_free}/{h.icu_total} free</Badge>
               </div>
             ))}
           </CardContent>
@@ -68,10 +106,14 @@ function AdminDashboard() {
             <CardTitle className="text-base">All booking requests</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
+            {!isStaff && <p className="text-sm text-muted-foreground">Staff or admin role required to view requests.</p>}
+            {isStaff && requests.length === 0 && (
+              <p className="text-sm text-muted-foreground">No requests yet.</p>
+            )}
             {requests.map((r) => (
               <div key={r.id} className="flex items-center justify-between border-b border-border pb-2 text-sm last:border-0 last:pb-0">
                 <span className="text-foreground">
-                  {r.createdAt} · {r.patient} → {hospitals.find((h) => h.id === r.hospitalId)?.name}
+                  {new Date(r.created_at).toLocaleString()} · {r.patient_name} → {r.hospitals?.name}
                 </span>
                 <Badge variant={r.status === "Approved" ? "default" : r.status === "Declined" ? "destructive" : "secondary"}>
                   {r.status}
