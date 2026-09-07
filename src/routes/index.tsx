@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: Landing;
+  component: Landing,
 });
 
 const roles = [
