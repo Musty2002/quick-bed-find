@@ -399,3 +399,62 @@ export const removeStaffAssignment = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/* ---------------- Public (no sign-in) booking ---------------- */
+
+export const createPublicBedRequest = createServerFn({ method: "POST" })
+  .inputValidator(
+    (input: {
+      hospitalId: string;
+      patientName: string;
+      condition: string;
+      severity: string;
+      phone?: string;
+      age?: number | null;
+    }) => {
+      if (!input?.hospitalId || !input?.patientName?.trim() || !input?.condition?.trim()) {
+        throw new Error("Patient name and condition are required");
+      }
+      if (!["Critical", "Serious", "Stable"].includes(input.severity)) {
+        throw new Error("Invalid severity");
+      }
+      return input;
+    },
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("bed_requests")
+      .insert({
+        hospital_id: data.hospitalId,
+        patient_name: data.patientName.trim().slice(0, 120),
+        condition: data.condition.trim().slice(0, 300),
+        severity: data.severity,
+        patient_phone: data.phone?.trim().slice(0, 32) || null,
+        patient_age: data.age ?? null,
+      })
+      .select("id, status, reservation_code, created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+/** Anyone holding a reservation code can check that reservation's status. */
+export const lookupMyPass = createServerFn({ method: "POST" })
+  .inputValidator((input: { codes: string[] }) => {
+    if (!Array.isArray(input?.codes)) throw new Error("Invalid input");
+    return { codes: input.codes.slice(0, 20).map((c) => String(c).toUpperCase().trim()) };
+  })
+  .handler(async ({ data }) => {
+    if (data.codes.length === 0) return [];
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin
+      .from("bed_requests")
+      .select(
+        "id, patient_name, condition, severity, status, created_at, checked_in_at, reservation_code, hospitals(name, city)",
+      )
+      .in("reservation_code", data.codes)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });

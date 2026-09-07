@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BookRouteImport } from './routes/book'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedPatientRouteImport } from './routes/_authenticated/patient'
 import { Route as AuthenticatedStaffRouteImport } from './routes/_authenticated/staff'
 
 const IndexRoute = IndexRouteImport.update({
@@ -30,14 +30,14 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPatientRoute = AuthenticatedPatientRouteImport.update({
-  id: '/patient',
-  path: '/patient',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedStaffRoute = AuthenticatedStaffRouteImport.update({
@@ -49,15 +49,15 @@ const AuthenticatedStaffRoute = AuthenticatedStaffRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/patient': typeof AuthenticatedPatientRoute
   '/staff': typeof AuthenticatedStaffRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/patient': typeof AuthenticatedPatientRoute
   '/staff': typeof AuthenticatedStaffRoute
 }
 export interface FileRoutesById {
@@ -65,22 +65,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/patient': typeof AuthenticatedPatientRoute
   '/_authenticated/staff': typeof AuthenticatedStaffRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/admin' | '/patient' | '/staff'
+  fullPaths: '/' | '/auth' | '/book' | '/admin' | '/staff'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/admin' | '/patient' | '/staff'
+  to: '/' | '/auth' | '/book' | '/admin' | '/staff'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/book'
     | '/_authenticated/admin'
-    | '/_authenticated/patient'
     | '/_authenticated/staff'
   fileRoutesById: FileRoutesById
 }
@@ -88,6 +88,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BookRoute: typeof BookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -113,18 +114,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/patient': {
-      id: '/_authenticated/patient'
-      path: '/patient'
-      fullPath: '/patient'
-      preLoaderRoute: typeof AuthenticatedPatientRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/staff': {
@@ -139,13 +140,11 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedPatientRoute: typeof AuthenticatedPatientRoute
   AuthenticatedStaffRoute: typeof AuthenticatedStaffRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedPatientRoute: AuthenticatedPatientRoute,
   AuthenticatedStaffRoute: AuthenticatedStaffRoute,
 }
 
@@ -156,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  BookRoute: BookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
