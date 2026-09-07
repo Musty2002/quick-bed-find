@@ -40,7 +40,7 @@ export function AppHeader() {
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-deep text-deep-foreground shadow-soft">
             <Activity className="h-4.5 w-4.5" strokeWidth={2.4} />
           </span>
-          <span className="truncate font-display text-base font-700 font-semibold text-foreground">
+          <span className="truncate font-display text-base font-semibold text-foreground">
             CritiCare Beds
           </span>
         </Link>
