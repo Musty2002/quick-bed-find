@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 const links = [
-  { to: "/", label: "Find a bed" },
+  { to: "/patient", label: "Book a bed" },
   { to: "/staff", label: "Hospital staff" },
   { to: "/admin", label: "Admin" },
 ] as const;
@@ -45,7 +45,6 @@ export function AppHeader() {
             <Link
               key={l.to}
               to={l.to}
-              activeOptions={{ exact: l.to === "/" }}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               activeProps={{ className: "bg-accent text-foreground" }}
             >
