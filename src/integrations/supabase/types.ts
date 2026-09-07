@@ -16,38 +16,85 @@ export type Database = {
     Tables: {
       bed_requests: {
         Row: {
+          checked_in_at: string | null
           condition: string
           created_at: string
           hospital_id: string
           id: string
+          notes: string | null
+          patient_age: number | null
           patient_name: string
+          patient_phone: string | null
           requester_id: string | null
+          reservation_code: string
           severity: string
           status: string
+          updated_at: string
         }
         Insert: {
+          checked_in_at?: string | null
           condition: string
           created_at?: string
           hospital_id: string
           id?: string
+          notes?: string | null
+          patient_age?: number | null
           patient_name: string
+          patient_phone?: string | null
           requester_id?: string | null
+          reservation_code?: string
           severity?: string
           status?: string
+          updated_at?: string
         }
         Update: {
+          checked_in_at?: string | null
           condition?: string
           created_at?: string
           hospital_id?: string
           id?: string
+          notes?: string | null
+          patient_age?: number | null
           patient_name?: string
+          patient_phone?: string | null
           requester_id?: string | null
+          reservation_code?: string
           severity?: string
           status?: string
+          updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "bed_requests_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hospital_staff: {
+        Row: {
+          created_at: string
+          hospital_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hospital_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hospital_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hospital_staff_hospital_id_fkey"
             columns: ["hospital_id"]
             isOneToOne: false
             referencedRelation: "hospitals"
@@ -116,6 +163,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_hospital_staff: {
+        Args: { _hospital_id: string; _user_id: string }
         Returns: boolean
       }
     }

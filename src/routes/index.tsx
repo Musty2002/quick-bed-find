@@ -1,16 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { AppHeader } from "@/components/AppHeader";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { createBedRequest, listHospitals, listMyRequests } from "@/lib/beds.functions";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { listHospitals } from "@/lib/beds.functions";
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) =>
@@ -20,26 +15,53 @@ export const Route = createFileRoute("/")({
     }),
   head: () => ({
     meta: [
-      { title: "Find an ICU Bed — CritiCare Beds" },
-      { name: "description", content: "Search live critical-care bed availability nearby and request an emergency booking in seconds." },
-      { property: "og:title", content: "Find an ICU Bed — CritiCare Beds" },
-      { property: "og:description", content: "Search live critical-care bed availability nearby and request an emergency booking in seconds." },
+      { title: "CritiCare Beds — Emergency ICU Bed Booking in Kano, Dutse & Azare" },
+      {
+        name: "description",
+        content:
+          "Book a critical-care bed in seconds. Live ICU availability across hospitals in Kano, Dutse (Jigawa) and Azare, with a QR pass for fast hospital check-in.",
+      },
+      { property: "og:title", content: "CritiCare Beds — Emergency ICU Bed Booking" },
+      {
+        property: "og:description",
+        content:
+          "Live ICU availability across Kano, Dutse and Azare hospitals. Reserve a bed and check in with a QR pass.",
+      },
     ],
   }),
-  component: PatientDashboard,
+  component: Landing,
 });
 
-function PatientDashboard() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const runCreateRequest = useServerFn(createBedRequest);
-  const fetchMyRequests = useServerFn(listMyRequests);
+const roles = [
+  {
+    key: "patient",
+    title: "Patient / Responder",
+    blurb: "Pick a hospital, answer a few quick prompts, get a QR pass.",
+    to: "/patient" as const,
+    cta: "Book a bed",
+  },
+  {
+    key: "staff",
+    title: "Hospital staff",
+    blurb: "Manage your hospital: requests, bed counts, QR check-in, records.",
+    to: "/staff" as const,
+    cta: "Staff sign in",
+  },
+  {
+    key: "admin",
+    title: "Administrator",
+    blurb: "Add hospitals, assign staff to hospitals, watch the whole network.",
+    to: "/admin" as const,
+    cta: "Admin sign in",
+  },
+];
 
-  const hospitalsQuery = useSuspenseQuery({
+function Landing() {
+  const navigate = useNavigate();
+  const hospitals = useSuspenseQuery({
     queryKey: ["hospitals"],
     queryFn: () => listHospitals(),
-  });
-  const hospitals = hospitalsQuery.data;
+  }).data;
 
   const [signedIn, setSignedIn] = useState(false);
   useEffect(() => {
@@ -52,134 +74,103 @@ function PatientDashboard() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const myRequestsQuery = useQuery({
-    queryKey: ["my-requests"],
-    queryFn: () => fetchMyRequests(),
-    enabled: signedIn,
-    retry: false,
-  });
+  const freeBeds = hospitals.reduce((s, h) => s + h.icu_free, 0);
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("home-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "hospitals" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["hospitals"] });
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "bed_requests" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["my-requests"] });
-      })
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  const [query, setQuery] = useState("");
-  const [patient, setPatient] = useState("");
-  const [condition, setCondition] = useState("");
-
-  const results = hospitals.filter((h) =>
-    (h.name + h.city).toLowerCase().includes(query.toLowerCase()),
-  );
-
-  async function request(hospitalId: string) {
-    if (!patient.trim() || !condition.trim()) {
-      toast.error("Enter patient name and condition first");
-      return;
-    }
-    if (!signedIn) {
-      navigate({ to: "/auth", search: { redirect: "/" } });
-      return;
-    }
-    try {
-      await runCreateRequest({
-        data: { hospitalId, patientName: patient, condition, severity: "Critical" },
-      });
-      toast.success("Request sent to the hospital");
-      setPatient("");
-      setCondition("");
-      queryClient.invalidateQueries({ queryKey: ["my-requests"] });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not send request");
-    }
+  function go(to: "/patient" | "/staff" | "/admin") {
+    if (signedIn) navigate({ to });
+    else navigate({ to: "/auth", search: { redirect: to } });
   }
-
-  const myRequests = (myRequestsQuery.data ?? []) as any[];
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
-      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Find a critical care bed</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Live ICU availability. Send a booking request straight to the hospital.
-          </p>
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+              ER
+            </span>
+            <span className="text-sm font-semibold text-foreground">CritiCare Beds</span>
+          </Link>
+          {signedIn ? (
+            <Button size="sm" variant="outline" onClick={() => navigate({ to: "/patient" })}>
+              Go to my dashboard
+            </Button>
+          ) : (
+            <Button size="sm" variant="outline" onClick={() => navigate({ to: "/auth", search: { redirect: "/" } })}>
+              Sign in
+            </Button>
+          )}
         </div>
+      </header>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Patient details</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="patient">Patient name</Label>
-              <Input id="patient" value={patient} onChange={(e) => setPatient(e.target.value)} placeholder="e.g. A. Musa" />
+      <main>
+        <section className="border-b border-border bg-gradient-to-b from-accent/40 to-background">
+          <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+            <Badge variant="secondary" className="mb-4">
+              {freeBeds} ICU beds free right now
+            </Badge>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Emergency critical-care beds, booked in seconds
+            </h1>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
+              Live ICU availability across hospitals in Kano, Dutse (Jigawa) and Azare. Choose a
+              hospital, answer three prompts, and arrive with a QR pass the ward can scan.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <Button size="lg" onClick={() => go("/patient")}>
+                Book a bed now
+              </Button>
+              <Button size="lg" variant="outline" onClick={() => go("/staff")}>
+                I work at a hospital
+              </Button>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="condition">Condition</Label>
-              <Input id="condition" value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="e.g. Cardiac arrest" />
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        <div className="space-y-3">
-          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search hospital or city" />
-          {results.map((h) => (
-            <Card key={h.id}>
-              <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+        <section className="mx-auto max-w-5xl px-4 py-12">
+          <h2 className="text-center text-sm font-medium uppercase tracking-wide text-muted-foreground">
+            Continue as
+          </h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {roles.map((r) => (
+              <Card key={r.key} className="flex flex-col justify-between transition-shadow hover:shadow-md">
+                <CardContent className="space-y-2 pt-6">
+                  <p className="font-semibold text-foreground">{r.title}</p>
+                  <p className="text-sm text-muted-foreground">{r.blurb}</p>
+                </CardContent>
+                <CardContent>
+                  <Button className="w-full" variant={r.key === "patient" ? "default" : "outline"} onClick={() => go(r.to)}>
+                    {r.cta}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-4 pb-16">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+            Live availability
+          </h2>
+          <div className="mt-4 space-y-2">
+            {hospitals.map((h) => (
+              <div
+                key={h.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-4 py-3"
+              >
                 <div>
-                  <p className="font-medium text-foreground">{h.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {h.city} · {h.distance_km} km · {h.ventilators} ventilators free
+                  <p className="text-sm font-medium text-foreground">{h.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {h.city} · {h.distance_km} km · {h.ventilators} ventilators
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant={h.icu_free > 0 ? "default" : "secondary"}>
-                    {h.icu_free}/{h.icu_total} ICU free
-                  </Badge>
-                  <Button size="sm" disabled={h.icu_free === 0} onClick={() => request(h.id)}>
-                    Request bed
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Your requests</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {!signedIn && (
-              <p className="text-sm text-muted-foreground">Sign in to see your booking requests.</p>
-            )}
-            {signedIn && myRequests.length === 0 && (
-              <p className="text-sm text-muted-foreground">No requests yet.</p>
-            )}
-            {myRequests.map((r) => (
-              <div key={r.id} className="flex items-center justify-between border-b border-border pb-2 text-sm last:border-0 last:pb-0">
-                <span className="text-foreground">
-                  {r.patient_name} — {r.hospitals?.name}
-                </span>
-                <Badge variant={r.status === "Approved" ? "default" : r.status === "Declined" ? "destructive" : "secondary"}>
-                  {r.status}
+                <Badge variant={h.icu_free > 0 ? "default" : "secondary"}>
+                  {h.icu_free}/{h.icu_total} ICU free
                 </Badge>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </main>
     </div>
   );
