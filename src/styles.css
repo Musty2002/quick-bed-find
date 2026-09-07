@@ -158,3 +158,29 @@
     color: var(--color-foreground);
   }
 }
+
+@utility bg-gradient-deep {
+  background-image: var(--gradient-deep);
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@layer base {
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  body {
+    font-family: var(--font-sans);
+  }
+}
