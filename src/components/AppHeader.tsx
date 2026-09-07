@@ -57,7 +57,7 @@ export function AppHeader() {
               Sign out
             </Button>
           ) : (
-            <Button size="sm" className="ml-2" onClick={() => navigate({ to: "/auth" })}>
+            <Button size="sm" className="ml-2" onClick={() => navigate({ to: "/auth", search: { redirect: "/" } })}>
               Sign in
             </Button>
           )}
