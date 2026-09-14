@@ -4,7 +4,7 @@ const {
   Footer, AlignmentType, LevelFormat, TableOfContents, HeadingLevel,
   BorderStyle, WidthType, ShadingType, PageNumber, PageBreak, TabStopType,
   TabStopPosition,
-} = require("/tmp/node_modules/docx");
+} = require("/tmp/gen/node_modules/docx");
 
 const SHOTS = "/tmp/browser/shots/";
 const FONT = "Times New Roman";
