@@ -72,25 +72,37 @@ const CODE = (text) =>
 const CAPT = (text) => CENTER(text, { bold: true, size: 20, after: 240 });
 const TCAPT = (text) => CENTER(text, { bold: true, size: 20, after: 100 });
 
-const FIG = (file, caption, width = 430) => {
-  const buf = fs.readFileSync(SHOTS + file);
-  const height = Math.round((width * 860) / 1280);
+// Placeholder frames — the author inserts the actual screenshots.
+const FIG = (file, caption) => {
+  const box = {
+    top: { style: BorderStyle.DASHED, size: 6, color: "808080", space: 6 },
+    bottom: { style: BorderStyle.DASHED, size: 6, color: "808080", space: 6 },
+    left: { style: BorderStyle.DASHED, size: 6, color: "808080", space: 6 },
+    right: { style: BorderStyle.DASHED, size: 6, color: "808080", space: 6 },
+  };
+  const line = (t, opts = {}) =>
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      border: undefined,
+      spacing: { before: 0, after: 0 },
+      children: [new TextRun({ text: t, italics: true, color: "666666", size: 20, ...opts })],
+    });
   return [
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 200, after: 80 },
+      border: box,
+      spacing: { before: 240, after: 40, line: 360 },
       children: [
-        new ImageRun({
-          type: "png",
-          data: buf,
-          transformation: { width, height },
-          altText: { title: caption, description: caption, name: caption },
-        }),
+        new TextRun({ text: "[ INSERT SCREENSHOT HERE ]", bold: true, color: "666666", size: 20 }),
+        new TextRun({ break: 1, text: caption, italics: true, color: "666666", size: 20 }),
+        new TextRun({ break: 1, text: `suggested file: ${file}`, italics: true, color: "999999", size: 18 }),
+        new TextRun({ break: 2, text: " ", size: 20 }),
       ],
     }),
     CAPT(caption),
   ];
 };
+
 
 const border = { style: BorderStyle.SINGLE, size: 1, color: "808080" };
 const borders = { top: border, bottom: border, left: border, right: border };
