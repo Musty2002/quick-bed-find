@@ -58,7 +58,7 @@ function LabPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="motion-enter space-y-4">
       <div className="inline-flex gap-1 rounded-xl border bg-card shadow-soft p-1">
         {(["requested", "completed"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-lg px-4 py-1.5 text-sm font-medium capitalize ${tab === t ? "bg-accent" : "text-muted-foreground"}`}>

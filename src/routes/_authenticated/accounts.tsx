@@ -46,7 +46,7 @@ function AccountsPage() {
   const owed = all.filter((c: any) => c.status === "unpaid").reduce((s: number, c: any) => s + Number(c.amount), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="motion-enter space-y-6">
       <div className="grid grid-cols-2 gap-3">
         <div className="motion-rise rounded-lg border bg-card p-5 shadow-soft"><p className="text-xs font-semibold uppercase text-muted-foreground">Collected</p><p className="mt-1 font-display text-2xl font-bold text-primary">{naira(paid)}</p></div>
         <div className="motion-rise rounded-lg border bg-card p-5 shadow-soft" style={{ animationDelay: "60ms" }}><p className="text-xs font-semibold uppercase text-muted-foreground">Outstanding</p><p className="mt-1 font-display text-2xl font-bold text-destructive">{naira(owed)}</p></div>

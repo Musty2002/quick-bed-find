@@ -134,7 +134,7 @@ function Consultation({ visitId }: { visitId: string }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="motion-enter space-y-4">
       <div className="rounded-lg border bg-card shadow-soft p-5">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-display text-xl font-bold">{p.full_name}</h2>

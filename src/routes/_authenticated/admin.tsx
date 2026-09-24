@@ -86,7 +86,7 @@ function AdminPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="motion-enter space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           ["Patients", stats.data?.patients],
