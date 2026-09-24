@@ -108,15 +108,15 @@ function Consultation({ visitId }: { visitId: string }) {
 
   async function save(status?: string) {
     const { error } = await supabase.from("visits").update({ ...diag, status: status ?? (v.status === "waiting" ? "in_consultation" : v.status) }).eq("id", visitId);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(status === "completed" ? "Visit completed" : "Saved");
     refresh();
   }
   async function requestTest(e: React.FormEvent) {
     e.preventDefault();
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("lab_tests").insert({ visit_id: visitId, patient_id: p.id, test_name: test, requested_by: u.user?.id });
-    if (error) return toast.error(error.message);
+    const { error } = await supabase.from("lab_tests").insert({ visit_id: visitId, patient_id: p.id, test_name: test, requested_by: u.user?.id ?? null });
+    if (error) { toast.error(error.message); return; }
     setTest("");
     toast.success("Sent to laboratory");
     refresh();
@@ -124,8 +124,8 @@ function Consultation({ visitId }: { visitId: string }) {
   async function addRx(e: React.FormEvent) {
     e.preventDefault();
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("prescriptions").insert({ ...rx, visit_id: visitId, patient_id: p.id, created_by: u.user?.id });
-    if (error) return toast.error(error.message);
+    const { error } = await supabase.from("prescriptions").insert({ ...rx, visit_id: visitId, patient_id: p.id, created_by: u.user?.id ?? null });
+    if (error) { toast.error(error.message); return; }
     setRx({ drug: "", dosage: "", frequency: "", duration: "" });
     refresh();
   }
@@ -159,7 +159,7 @@ function Consultation({ visitId }: { visitId: string }) {
             <Button type="submit">Request</Button>
           </form>
           <div className="mt-3 space-y-2">
-            {visit.data.labs.map((l: any) => (
+            {visit.data!.labs.map((l: any) => (
               <div key={l.id} className="rounded-xl border p-3 text-sm">
                 <div className="flex items-center justify-between"><strong>{l.test_name}</strong><StatusBadge status={l.status} /></div>
                 {l.result && <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{l.result}</p>}
@@ -177,7 +177,7 @@ function Consultation({ visitId }: { visitId: string }) {
             <Button type="submit">Add</Button>
           </form>
           <div className="mt-3 space-y-2">
-            {visit.data.rx.map((r: any) => (
+            {visit.data!.rx.map((r: any) => (
               <div key={r.id} className="flex items-center justify-between rounded-xl border p-3 text-sm">
                 <span><strong>{r.drug}</strong> <span className="text-muted-foreground">{[r.dosage, r.frequency, r.duration].filter(Boolean).join(" · ")}</span></span>
                 <Button size="icon" variant="ghost" aria-label="Remove" onClick={async () => { await supabase.from("prescriptions").delete().eq("id", r.id); refresh(); }}>

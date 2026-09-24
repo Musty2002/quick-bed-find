@@ -90,14 +90,14 @@ function Bill({ visitId }: { visitId: string }) {
 
   async function add(description: string, amount: number) {
     const { error } = await supabase.from("charges").insert({ visit_id: visitId, patient_id: visit.patient_id, description, amount });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setItem({ description: "", amount: "" });
     refresh();
   }
   async function pay(id: string, method: string) {
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("charges").update({ status: "paid", method, received_by: u.user?.id, paid_at: new Date().toISOString() }).eq("id", id);
-    if (error) return toast.error(error.message);
+    const { error } = await supabase.from("charges").update({ status: "paid", method, received_by: u.user?.id ?? null, paid_at: new Date().toISOString() }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
     toast.success("Payment recorded");
     refresh();
   }

@@ -72,11 +72,11 @@ function RecordsPage() {
         age: form.age ? Number(form.age) : null,
         phone: form.phone || null,
         address: form.address || null,
-        created_by: u.user?.id,
+        created_by: u.user?.id ?? null,
       })
       .select()
       .single();
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`Registered ${data.full_name} (${data.hospital_no})`);
     setForm({ full_name: "", gender: "Male", age: "", phone: "", address: "" });
     setSelected(data as Patient);
@@ -85,15 +85,15 @@ function RecordsPage() {
 
   async function sendToDoctor(e: React.FormEvent) {
     e.preventDefault();
-    if (!selected || !send.doctor_id) return toast.error("Choose a patient and a doctor");
+    if (!selected || !send.doctor_id) { toast.error("Choose a patient and a doctor"); return; }
     const { data: u } = await supabase.auth.getUser();
     const { error } = await supabase.from("visits").insert({
       patient_id: selected.id,
       doctor_id: send.doctor_id,
       complaint: send.complaint,
-      created_by: u.user?.id,
+      created_by: u.user?.id ?? null,
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`${selected.full_name} sent to ${docName(send.doctor_id)}`);
     setSend({ doctor_id: "", complaint: "" });
     setSelected(null);

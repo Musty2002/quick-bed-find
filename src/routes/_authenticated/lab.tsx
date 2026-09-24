@@ -44,13 +44,13 @@ function LabPage() {
 
   async function submit(id: string) {
     const result = results[id]?.trim();
-    if (!result) return toast.error("Enter the result first");
+    if (!result) { toast.error("Enter the result first"); return; }
     const { data: u } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("lab_tests")
-      .update({ result, status: "completed", completed_by: u.user?.id, completed_at: new Date().toISOString() })
+      .update({ result, status: "completed", completed_by: u.user?.id ?? null, completed_at: new Date().toISOString() })
       .eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Result sent to doctor");
     qc.invalidateQueries({ queryKey: ["lab"] });
   }
