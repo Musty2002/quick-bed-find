@@ -15,10 +15,10 @@ export const Route = createFileRoute("/auth")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign In — CritiCare Beds" },
-      { name: "description", content: "Sign in to request emergency critical-care beds and manage hospital bookings." },
-      { property: "og:title", content: "Sign In — CritiCare Beds" },
-      { property: "og:description", content: "Sign in to request emergency critical-care beds and manage hospital bookings." },
+      { title: "Sign In — CritiCare HMS" },
+      { name: "description", content: "Sign in to access your hospital desk." },
+      { property: "og:title", content: "Sign In — CritiCare HMS" },
+      { property: "og:description", content: "Sign in to access your hospital desk." },
     ],
   }),
   component: AuthPage,
