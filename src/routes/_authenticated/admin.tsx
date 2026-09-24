@@ -91,9 +91,9 @@ function AdminPage() {
           ["Active visits", stats.data?.active],
           ["Pending lab tests", stats.data?.lab],
           ["Revenue collected", naira(stats.data?.revenue ?? 0)],
-        ].map(([k, v]) => (
-          <div key={k as string} className="rounded-lg border bg-card shadow-soft p-4">
-            <p className="text-xs text-muted-foreground">{k}</p>
+        ].map(([k, v], index) => (
+          <div key={k as string} className="motion-rise rounded-lg border bg-card p-5 shadow-soft" style={{ animationDelay: `${index * 60}ms` }}>
+            <p className="text-xs font-semibold uppercase text-muted-foreground">{k}</p>
             <p className="mt-1 font-display text-2xl font-bold">{v ?? "—"}</p>
           </div>
         ))}

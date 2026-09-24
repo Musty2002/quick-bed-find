@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Cross, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { AppHeader } from "@/components/AppHeader";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import heroImage from "@/assets/hero-icu.jpg";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -82,10 +84,23 @@ function AuthPage() {
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
-      <main className="mx-auto flex max-w-md flex-col px-4 py-12">
-        <Card>
+      <main className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-stretch lg:grid-cols-[1.15fr_0.85fr]">
+        <section className="relative hidden overflow-hidden lg:block">
+          <img src={heroImage} alt="Modern hospital care team" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-deep/90" />
+          <div className="motion-enter relative flex h-full max-w-xl flex-col justify-end p-12 text-deep-foreground">
+            <span className="mb-auto grid h-12 w-12 place-items-center rounded-lg bg-primary text-primary-foreground shadow-lift"><Cross className="h-6 w-6" /></span>
+            <ShieldCheck className="mb-5 h-8 w-8 text-primary" />
+            <h1 className="font-display text-4xl font-bold">One secure workspace for every hospital team.</h1>
+            <p className="mt-4 text-base text-deep-foreground/75">Access patient records, consultations, laboratory requests, payments, and administration from your assigned desk.</p>
+          </div>
+        </section>
+        <section className="motion-enter flex items-center justify-center px-4 py-12 sm:px-8">
+        <Card className="w-full max-w-md border-primary/10">
           <CardHeader>
-            <CardTitle>{mode === "signin" ? "Sign in" : "Create account"}</CardTitle>
+            <span className="mb-3 w-fit rounded-md bg-primary/10 px-2.5 py-1 text-xs font-bold uppercase text-primary">Staff access</span>
+            <CardTitle className="text-2xl">{mode === "signin" ? "Welcome back" : "Create account"}</CardTitle>
+            <p className="text-sm text-muted-foreground">{mode === "signin" ? "Sign in to open your hospital workspace." : "Create your secure staff account."}</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleEmail} className="space-y-3">
@@ -136,6 +151,7 @@ function AuthPage() {
             </button>
           </CardContent>
         </Card>
+        </section>
       </main>
     </div>
   );

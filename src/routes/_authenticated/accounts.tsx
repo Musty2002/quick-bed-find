@@ -46,8 +46,8 @@ function AccountsPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-lg border bg-card shadow-soft p-4"><p className="text-xs text-muted-foreground">Collected</p><p className="font-display text-2xl font-bold text-primary">{naira(paid)}</p></div>
-        <div className="rounded-lg border bg-card shadow-soft p-4"><p className="text-xs text-muted-foreground">Outstanding</p><p className="font-display text-2xl font-bold text-destructive">{naira(owed)}</p></div>
+        <div className="motion-rise rounded-lg border bg-card p-5 shadow-soft"><p className="text-xs font-semibold uppercase text-muted-foreground">Collected</p><p className="mt-1 font-display text-2xl font-bold text-primary">{naira(paid)}</p></div>
+        <div className="motion-rise rounded-lg border bg-card p-5 shadow-soft" style={{ animationDelay: "60ms" }}><p className="text-xs font-semibold uppercase text-muted-foreground">Outstanding</p><p className="mt-1 font-display text-2xl font-bold text-destructive">{naira(owed)}</p></div>
       </div>
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
         <div className="divide-y rounded-lg border bg-card shadow-soft">
