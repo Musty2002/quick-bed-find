@@ -15,9 +15,9 @@ import { listDoctors } from "@/lib/hms.functions";
 export const Route = createFileRoute("/_authenticated/records")({
   head: () => ({
     meta: [
-      { title: "Records — CritiCare HMS" },
+      { title: "Records — HospitalManagement System" },
       { name: "description", content: "Register patients and send them to a doctor." },
-      { property: "og:title", content: "Records — CritiCare HMS" },
+      { property: "og:title", content: "Records — HospitalManagement System" },
       { property: "og:description", content: "Register patients and send them to a doctor." },
     ],
   }),
@@ -102,7 +102,7 @@ function RecordsPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <form onSubmit={register} className="space-y-3 rounded-2xl border bg-card p-5">
+      <form onSubmit={register} className="space-y-3 rounded-lg border bg-card shadow-soft p-5">
         <h2 className="flex items-center gap-2 font-display font-semibold"><UserPlus className="h-4 w-4" /> New patient</h2>
         <div className="space-y-1.5">
           <Label>Full name</Label>
@@ -132,7 +132,7 @@ function RecordsPage() {
         <Button type="submit" className="w-full">Register patient</Button>
       </form>
 
-      <div className="space-y-3 rounded-2xl border bg-card p-5">
+      <div className="space-y-3 rounded-lg border bg-card shadow-soft p-5">
         <h2 className="flex items-center gap-2 font-display font-semibold"><Send className="h-4 w-4" /> Send to doctor</h2>
         <div className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -163,7 +163,7 @@ function RecordsPage() {
         </form>
       </div>
 
-      <div className="rounded-2xl border bg-card lg:col-span-2">
+      <div className="rounded-lg border bg-card shadow-soft lg:col-span-2">
         <h2 className="border-b p-4 font-display font-semibold">Recent visits</h2>
         <div className="divide-y">
           {visits.data?.map((v: any) => (

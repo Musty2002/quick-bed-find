@@ -15,9 +15,9 @@ export const Route = createFileRoute("/auth")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign In — CritiCare HMS" },
+      { title: "Sign In — HospitalManagement System" },
       { name: "description", content: "Sign in to access your hospital desk." },
-      { property: "og:title", content: "Sign In — CritiCare HMS" },
+      { property: "og:title", content: "Sign In — HospitalManagement System" },
       { property: "og:description", content: "Sign in to access your hospital desk." },
     ],
   }),

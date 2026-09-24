@@ -8,13 +8,13 @@ import heroImage from "@/assets/hero-icu.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CritiCare HMS — Hospital Management System" },
+      { title: "HospitalManagement System — Hospital Management System" },
       {
         name: "description",
         content:
           "Hospital management for records, doctors, laboratory, accounts and admin: register patients, consult, test, prescribe and bill in one place.",
       },
-      { property: "og:title", content: "CritiCare HMS — Hospital Management System" },
+      { property: "og:title", content: "HospitalManagement System — Hospital Management System" },
       {
         property: "og:description",
         content: "One system for records, doctors, laboratory, accounts and administration.",
@@ -73,7 +73,7 @@ function Home() {
             <button
               key={r.role}
               onClick={() => go(r.role, r.to)}
-              className="group flex flex-col rounded-2xl border bg-card p-5 text-left shadow-soft transition hover:-translate-y-0.5 hover:border-primary"
+              className="group flex flex-col rounded-lg border bg-card shadow-soft p-5 text-left shadow-soft transition hover:-translate-y-0.5 hover:border-primary"
             >
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
                 <r.icon className="h-5 w-5" />
@@ -88,7 +88,7 @@ function Home() {
         </div>
       </main>
       <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        CritiCare HMS · Federal University Dutse project
+        HospitalManagement System · Federal University Dutse project
       </footer>
     </div>
   );

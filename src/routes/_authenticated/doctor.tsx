@@ -13,9 +13,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/doctor")({
   head: () => ({
     meta: [
-      { title: "Doctor — CritiCare HMS" },
+      { title: "Doctor — HospitalManagement System" },
       { name: "description", content: "See your patients, request lab tests and write prescriptions." },
-      { property: "og:title", content: "Doctor — CritiCare HMS" },
+      { property: "og:title", content: "Doctor — HospitalManagement System" },
       { property: "og:description", content: "See your patients, request lab tests and write prescriptions." },
     ],
   }),
@@ -47,7 +47,7 @@ function DoctorPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-      <div className="rounded-2xl border bg-card">
+      <div className="rounded-lg border bg-card shadow-soft">
         <div className="flex gap-1 border-b p-2">
           {[false, true].map((d) => (
             <button key={String(d)} onClick={() => setShowDone(d)} className={`flex-1 rounded-lg py-1.5 text-sm font-medium ${showDone === d ? "bg-accent" : "text-muted-foreground"}`}>
@@ -69,7 +69,7 @@ function DoctorPage() {
         </div>
       </div>
       {activeId ? <Consultation visitId={activeId} /> : (
-        <div className="grid place-items-center rounded-2xl border border-dashed p-10 text-sm text-muted-foreground">Choose a patient from the queue.</div>
+        <div className="grid place-items-center rounded-lg border border-dashed p-10 text-sm text-muted-foreground">Choose a patient from the queue.</div>
       )}
     </div>
   );
@@ -132,7 +132,7 @@ function Consultation({ visitId }: { visitId: string }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border bg-card p-5">
+      <div className="rounded-lg border bg-card shadow-soft p-5">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-display text-xl font-bold">{p.full_name}</h2>
           <StatusBadge status={v.status} />
@@ -152,7 +152,7 @@ function Consultation({ visitId }: { visitId: string }) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <div className="rounded-2xl border bg-card p-5">
+        <div className="rounded-lg border bg-card shadow-soft p-5">
           <h3 className="flex items-center gap-2 font-display font-semibold"><FlaskConical className="h-4 w-4" /> Lab tests</h3>
           <form onSubmit={requestTest} className="mt-3 flex gap-2">
             <Input required placeholder="e.g. Full blood count, Malaria parasite" value={test} onChange={(e) => setTest(e.target.value)} />
@@ -167,7 +167,7 @@ function Consultation({ visitId }: { visitId: string }) {
             ))}
           </div>
         </div>
-        <div className="rounded-2xl border bg-card p-5">
+        <div className="rounded-lg border bg-card shadow-soft p-5">
           <h3 className="flex items-center gap-2 font-display font-semibold"><Pill className="h-4 w-4" /> Prescriptions</h3>
           <form onSubmit={addRx} className="mt-3 grid grid-cols-2 gap-2">
             <Input required className="col-span-2" placeholder="Drug" value={rx.drug} onChange={(e) => setRx({ ...rx, drug: e.target.value })} />
