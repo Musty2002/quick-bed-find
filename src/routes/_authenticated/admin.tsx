@@ -16,10 +16,12 @@ import { ROLES, naira, type StaffRole } from "@/lib/roles";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — CritiCare HMS" },
+      { title: "Admin — HospitalManagement System" },
       { name: "description", content: "Add hospital staff and manage their roles." },
-      { property: "og:title", content: "Admin — CritiCare HMS" },
+      { property: "og:title", content: "Admin — HospitalManagement System" },
       { property: "og:description", content: "Add hospital staff and manage their roles." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (
@@ -84,23 +86,23 @@ function AdminPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="motion-enter space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           ["Patients", stats.data?.patients],
           ["Active visits", stats.data?.active],
           ["Pending lab tests", stats.data?.lab],
           ["Revenue collected", naira(stats.data?.revenue ?? 0)],
-        ].map(([k, v]) => (
-          <div key={k as string} className="rounded-2xl border bg-card p-4">
-            <p className="text-xs text-muted-foreground">{k}</p>
+        ].map(([k, v], index) => (
+          <div key={k as string} className="motion-rise rounded-lg border bg-card p-5 shadow-soft" style={{ animationDelay: `${index * 60}ms` }}>
+            <p className="text-xs font-semibold uppercase text-muted-foreground">{k}</p>
             <p className="mt-1 font-display text-2xl font-bold">{v ?? "—"}</p>
           </div>
         ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-        <form onSubmit={add} className="space-y-3 rounded-2xl border bg-card p-5">
+        <form onSubmit={add} className="space-y-3 rounded-lg border bg-card shadow-soft p-5">
           <h2 className="flex items-center gap-2 font-display font-semibold">
             <UserPlus className="h-4 w-4" /> Add staff
           </h2>
@@ -135,7 +137,7 @@ function AdminPage() {
           </Button>
         </form>
 
-        <div className="rounded-2xl border bg-card">
+        <div className="rounded-lg border bg-card shadow-soft">
           <h2 className="border-b p-4 font-display font-semibold">Staff ({staff.data?.length ?? 0})</h2>
           <div className="divide-y">
             {staff.data?.map((s) => (

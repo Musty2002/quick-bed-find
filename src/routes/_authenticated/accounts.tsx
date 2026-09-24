@@ -12,10 +12,12 @@ import { naira } from "@/lib/roles";
 export const Route = createFileRoute("/_authenticated/accounts")({
   head: () => ({
     meta: [
-      { title: "Accounts — CritiCare HMS" },
+      { title: "Accounts — HospitalManagement System" },
       { name: "description", content: "Bill patients for consultations and lab tests and record payments." },
-      { property: "og:title", content: "Accounts — CritiCare HMS" },
+      { property: "og:title", content: "Accounts — HospitalManagement System" },
       { property: "og:description", content: "Bill patients and record payments." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (
@@ -44,13 +46,13 @@ function AccountsPage() {
   const owed = all.filter((c: any) => c.status === "unpaid").reduce((s: number, c: any) => s + Number(c.amount), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="motion-enter space-y-6">
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border bg-card p-4"><p className="text-xs text-muted-foreground">Collected</p><p className="font-display text-2xl font-bold text-primary">{naira(paid)}</p></div>
-        <div className="rounded-2xl border bg-card p-4"><p className="text-xs text-muted-foreground">Outstanding</p><p className="font-display text-2xl font-bold text-destructive">{naira(owed)}</p></div>
+        <div className="motion-rise rounded-lg border bg-card p-5 shadow-soft"><p className="text-xs font-semibold uppercase text-muted-foreground">Collected</p><p className="mt-1 font-display text-2xl font-bold text-primary">{naira(paid)}</p></div>
+        <div className="motion-rise rounded-lg border bg-card p-5 shadow-soft" style={{ animationDelay: "60ms" }}><p className="text-xs font-semibold uppercase text-muted-foreground">Outstanding</p><p className="mt-1 font-display text-2xl font-bold text-destructive">{naira(owed)}</p></div>
       </div>
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-        <div className="divide-y rounded-2xl border bg-card">
+        <div className="divide-y rounded-lg border bg-card shadow-soft">
           {visits.data?.map((v: any) => {
             const due = (v.charges ?? []).filter((c: any) => c.status === "unpaid").reduce((s: number, c: any) => s + Number(c.amount), 0);
             return (
@@ -62,7 +64,7 @@ function AccountsPage() {
           })}
           {visits.data?.length === 0 && <p className="p-4 text-sm text-muted-foreground">No visits yet.</p>}
         </div>
-        {activeId ? <Bill visitId={activeId} /> : <div className="grid place-items-center rounded-2xl border border-dashed p-10 text-sm text-muted-foreground">Choose a visit to bill.</div>}
+        {activeId ? <Bill visitId={activeId} /> : <div className="grid place-items-center rounded-lg border border-dashed p-10 text-sm text-muted-foreground">Choose a visit to bill.</div>}
       </div>
     </div>
   );
@@ -105,7 +107,7 @@ function Bill({ visitId }: { visitId: string }) {
   const due = charges.filter((c: any) => c.status === "unpaid").reduce((s: number, c: any) => s + Number(c.amount), 0);
 
   return (
-    <div className="space-y-4 rounded-2xl border bg-card p-5">
+    <div className="space-y-4 rounded-lg border bg-card shadow-soft p-5">
       <div>
         <h2 className="font-display text-xl font-bold">{visit.patients.full_name}</h2>
         <p className="text-sm text-muted-foreground">{visit.patients.hospital_no} · visit on {new Date(visit.created_at).toLocaleString()}</p>

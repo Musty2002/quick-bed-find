@@ -11,10 +11,12 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/lab")({
   head: () => ({
     meta: [
-      { title: "Laboratory — CritiCare HMS" },
+      { title: "Laboratory — HospitalManagement System" },
       { name: "description", content: "Receive lab test requests from doctors and enter results." },
-      { property: "og:title", content: "Laboratory — CritiCare HMS" },
+      { property: "og:title", content: "Laboratory — HospitalManagement System" },
       { property: "og:description", content: "Receive lab test requests from doctors and enter results." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (
@@ -56,8 +58,8 @@ function LabPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="inline-flex gap-1 rounded-xl border bg-card p-1">
+    <div className="motion-enter space-y-4">
+      <div className="inline-flex gap-1 rounded-xl border bg-card shadow-soft p-1">
         {(["requested", "completed"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-lg px-4 py-1.5 text-sm font-medium capitalize ${tab === t ? "bg-accent" : "text-muted-foreground"}`}>
             {t === "requested" ? "Pending" : "Completed"}
@@ -66,7 +68,7 @@ function LabPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {tests.data?.map((t: any) => (
-          <div key={t.id} className="rounded-2xl border bg-card p-5">
+          <div key={t.id} className="rounded-lg border bg-card shadow-soft p-5">
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-display font-semibold">{t.test_name}</h3>
               <StatusBadge status={t.status} />

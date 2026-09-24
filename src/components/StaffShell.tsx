@@ -35,26 +35,27 @@ export function StaffShell({
   const { data: roles, isLoading } = useMyRoles();
   const allowed = roles?.includes(role);
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background lg:pl-64">
       <AppHeader />
-      <div className="bg-gradient-deep text-deep-foreground">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-8">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-deep-foreground/15">
-            <Icon className="h-6 w-6" />
+      <div className="border-b bg-card">
+        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-6 sm:px-6 lg:px-8">
+          <span className="grid h-11 w-11 place-items-center rounded-lg bg-primary/10 text-primary">
+            <Icon className="h-5 w-5" />
           </span>
           <div>
-            <h1 className="font-display text-2xl font-bold sm:text-3xl">{title}</h1>
-            <p className="text-sm opacity-80">{subtitle}</p>
+            <h1 className="font-display text-xl font-bold text-foreground sm:text-2xl">{title}</h1>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
+          <span className="ml-auto hidden rounded-md bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase text-primary sm:inline">{title} role</span>
         </div>
       </div>
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className="motion-enter mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         {isLoading ? (
           <p className="text-muted-foreground">Loading…</p>
         ) : allowed ? (
           children
         ) : (
-          <div className="mx-auto max-w-md rounded-2xl border bg-card p-8 text-center">
+          <div className="mx-auto max-w-md rounded-lg border bg-card p-8 text-center shadow-soft">
             <Lock className="mx-auto h-8 w-8 text-muted-foreground" />
             <h2 className="mt-3 font-display text-lg font-semibold">No access</h2>
             <p className="mt-1 text-sm text-muted-foreground">

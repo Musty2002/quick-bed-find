@@ -46,7 +46,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-xl font-semibold text-foreground">
           This page didn't load
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -79,11 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CritiCare HMS" },
-      { name: "description", content: "Hospital management system" },
+      { title: "HospitalManagement System" },
+      { name: "description", content: "A complete hospital management system for clinical and administrative teams." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "CritiCare HMS" },
-      { property: "og:description", content: "Hospital management system" },
+      { property: "og:title", content: "HospitalManagement System" },
+      { property: "og:description", content: "A complete hospital management system for clinical and administrative teams." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
