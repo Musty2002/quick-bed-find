@@ -15,6 +15,8 @@ export const Route = createFileRoute("/_authenticated/lab")({
       { name: "description", content: "Receive lab test requests from doctors and enter results." },
       { property: "og:title", content: "Laboratory — HospitalManagement System" },
       { property: "og:description", content: "Receive lab test requests from doctors and enter results." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (

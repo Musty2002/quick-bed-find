@@ -20,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { name: "description", content: "Add hospital staff and manage their roles." },
       { property: "og:title", content: "Admin — HospitalManagement System" },
       { property: "og:description", content: "Add hospital staff and manage their roles." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (

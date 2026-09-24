@@ -19,6 +19,8 @@ export const Route = createFileRoute("/_authenticated/records")({
       { name: "description", content: "Register patients and send them to a doctor." },
       { property: "og:title", content: "Records — HospitalManagement System" },
       { property: "og:description", content: "Register patients and send them to a doctor." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (

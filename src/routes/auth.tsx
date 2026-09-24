@@ -21,6 +21,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Sign in to access your hospital desk." },
       { property: "og:title", content: "Sign In — HospitalManagement System" },
       { property: "og:description", content: "Sign in to access your hospital desk." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,

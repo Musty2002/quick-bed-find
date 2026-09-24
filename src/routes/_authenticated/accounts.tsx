@@ -16,6 +16,8 @@ export const Route = createFileRoute("/_authenticated/accounts")({
       { name: "description", content: "Bill patients for consultations and lab tests and record payments." },
       { property: "og:title", content: "Accounts — HospitalManagement System" },
       { property: "og:description", content: "Bill patients and record payments." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => (
