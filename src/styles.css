@@ -69,47 +69,47 @@
 }
 
 :root {
-  --radius: 0.875rem;
-  --background: oklch(0.985 0.008 210);
-  --foreground: oklch(0.21 0.04 235);
+  --radius: 0.5rem;
+  --background: oklch(0.978 0.008 255);
+  --foreground: oklch(0.22 0.035 258);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.04 235);
+  --card-foreground: oklch(0.22 0.035 258);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.04 235);
-  --primary: oklch(0.55 0.11 205);
-  --primary-foreground: oklch(0.99 0.005 210);
-  --secondary: oklch(0.95 0.02 205);
-  --secondary-foreground: oklch(0.28 0.05 230);
-  --muted: oklch(0.955 0.012 215);
-  --muted-foreground: oklch(0.52 0.03 230);
-  --accent: oklch(0.93 0.045 190);
-  --accent-foreground: oklch(0.28 0.06 220);
+  --popover-foreground: oklch(0.22 0.035 258);
+  --primary: oklch(0.55 0.2 258);
+  --primary-foreground: oklch(0.99 0.003 255);
+  --secondary: oklch(0.95 0.025 255);
+  --secondary-foreground: oklch(0.34 0.09 258);
+  --muted: oklch(0.955 0.012 255);
+  --muted-foreground: oklch(0.5 0.035 258);
+  --accent: oklch(0.93 0.038 255);
+  --accent-foreground: oklch(0.38 0.14 258);
   --destructive: oklch(0.575 0.215 22);
   --destructive-foreground: oklch(0.99 0.005 210);
-  --border: oklch(0.9 0.015 215);
-  --input: oklch(0.9 0.015 215);
-  --ring: oklch(0.55 0.11 205);
-  --chart-1: oklch(0.55 0.11 205);
+  --border: oklch(0.89 0.018 255);
+  --input: oklch(0.87 0.022 255);
+  --ring: oklch(0.55 0.2 258);
+  --chart-1: oklch(0.55 0.2 258);
   --chart-2: oklch(0.68 0.13 175);
   --chart-3: oklch(0.35 0.07 250);
   --chart-4: oklch(0.75 0.16 80);
   --chart-5: oklch(0.6 0.2 20);
-  --sidebar: oklch(0.985 0.008 210);
-  --sidebar-foreground: oklch(0.21 0.04 235);
-  --sidebar-primary: oklch(0.55 0.11 205);
-  --sidebar-primary-foreground: oklch(0.99 0.005 210);
-  --sidebar-accent: oklch(0.93 0.045 190);
-  --sidebar-accent-foreground: oklch(0.28 0.06 220);
-  --sidebar-border: oklch(0.9 0.015 215);
-  --sidebar-ring: oklch(0.55 0.11 205);
+  --sidebar: oklch(0.21 0.04 258);
+  --sidebar-foreground: oklch(0.92 0.015 255);
+  --sidebar-primary: oklch(0.62 0.2 258);
+  --sidebar-primary-foreground: oklch(0.99 0.003 255);
+  --sidebar-accent: oklch(0.29 0.055 258);
+  --sidebar-accent-foreground: oklch(0.99 0.003 255);
+  --sidebar-border: oklch(0.31 0.04 258);
+  --sidebar-ring: oklch(0.62 0.2 258);
 
-  --deep: oklch(0.24 0.05 240);
-  --deep-foreground: oklch(0.97 0.01 210);
+  --deep: oklch(0.21 0.04 258);
+  --deep-foreground: oklch(0.98 0.006 255);
   --vital: oklch(0.72 0.16 160);
   --vital-foreground: oklch(0.21 0.04 235);
-  --gradient-deep: linear-gradient(150deg, oklch(0.24 0.05 240), oklch(0.34 0.07 215) 55%, oklch(0.46 0.09 195));
-  --shadow-soft: 0 1px 2px oklch(0.24 0.05 240 / 6%), 0 12px 32px -18px oklch(0.24 0.05 240 / 28%);
-  --shadow-lift: 0 20px 50px -24px oklch(0.24 0.05 240 / 38%);
+  --gradient-deep: linear-gradient(150deg, oklch(0.21 0.04 258), oklch(0.3 0.09 258));
+  --shadow-soft: 0 1px 2px oklch(0.25 0.05 258 / 5%), 0 10px 28px -18px oklch(0.35 0.14 258 / 24%);
+  --shadow-lift: 0 16px 40px -22px oklch(0.35 0.16 258 / 35%);
 }
 
 
@@ -156,6 +156,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    min-width: 320px;
   }
 }
 
@@ -178,9 +179,43 @@
 @layer base {
   h1, h2, h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
   body {
     font-family: var(--font-sans);
+  }
+  button, a, input, textarea, select {
+    transition-duration: 180ms;
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  }
+  input, textarea, select {
+    background-color: var(--color-card);
+  }
+}
+
+@utility motion-enter {
+  animation: motion-enter 420ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@utility motion-rise {
+  animation: motion-rise 480ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes motion-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes motion-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
