@@ -35,10 +35,11 @@ function DoctorPage() {
     queryKey: ["doctor-queue", showDone],
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return [];
       let q = supabase
         .from("visits")
         .select("id, status, complaint, created_at, patients(full_name, hospital_no, gender, age)")
-        .eq("doctor_id", u.user!.id)
+        .eq("doctor_id", u.user.id)
         .order("created_at", { ascending: false });
       q = showDone ? q.eq("status", "completed") : q.neq("status", "completed");
       const { data } = await q;
