@@ -40,7 +40,7 @@ export function AppHeader() {
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground shadow-soft">
             <Cross className="h-5 w-5" strokeWidth={2.8} />
           </span>
-          <span className={email ? "min-w-0 text-sidebar-foreground" : "min-w-0 text-foreground"}>
+          <span className={email ? "min-w-0 text-foreground lg:text-sidebar-foreground" : "min-w-0 text-foreground"}>
             <span className="block truncate font-display text-sm font-bold">HospitalManagement</span>
             <span className="block text-[10px] font-bold uppercase text-primary">System</span>
           </span>
@@ -60,7 +60,7 @@ export function AppHeader() {
             ))}
           </nav>
           {email ? (
-            <Button size="sm" variant="ghost" className="ml-auto text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground lg:mt-auto lg:ml-0 lg:justify-start" onClick={handleSignOut}>
+            <Button size="sm" variant="ghost" className="ml-auto text-muted-foreground hover:bg-accent hover:text-accent-foreground lg:mt-auto lg:ml-0 lg:justify-start lg:text-sidebar-foreground lg:hover:bg-sidebar-accent lg:hover:text-sidebar-accent-foreground" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sign out</span>
             </Button>
           ) : (
@@ -69,7 +69,7 @@ export function AppHeader() {
             </Button>
           )}
           {links.length > 0 && (
-            <Button size="icon" variant="ghost" className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground lg:hidden" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((v) => !v)}>
+            <Button size="icon" variant="ghost" className="text-muted-foreground hover:bg-accent hover:text-accent-foreground lg:hidden" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((v) => !v)}>
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           )}
