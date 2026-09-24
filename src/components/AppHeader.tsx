@@ -15,13 +15,21 @@ export function AppHeader() {
   const { data: myRoles } = useMyRoles();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+    let mounted = true;
+    const loadEmail = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (mounted) setEmail(data.user?.email ?? null);
+    };
+    void loadEmail();
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+      void loadEmail();
       queryClient.invalidateQueries({ queryKey: ["my-roles"] });
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, [queryClient]);
 
   const links = email ? ROLES.filter((r) => myRoles?.includes(r.role)) : [];
