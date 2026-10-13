@@ -4,9 +4,8 @@ Cloud based hospital management system for a single hospital site. Patients move
 five staff desks — Records → Doctor → Laboratory → Accountant — while an administrator
 manages staff accounts and their roles.
 
-This project was built with [Lovable](https://lovable.dev).
+This project was built by Nura Hamisu
 
-**Live app**: https://hospitalmisnura.lovable.app
 
 ## What it does
 
